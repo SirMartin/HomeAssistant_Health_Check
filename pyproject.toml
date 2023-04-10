@@ -1,0 +1,15 @@
+[tool]
+[tool.pdm]
+
+[project]
+name = "Health Check HA"
+version = "1.0.0"
+description = "Health Checks for Home Assistant."
+authors = [
+    {name = "Eduardo Izquierdo", email = "sirmartin@gmail.com"},
+]
+dependencies = [
+    "requests",
+]
+requires-python = ">=3.9"
+license = {text = "Piribisoft.com"}
