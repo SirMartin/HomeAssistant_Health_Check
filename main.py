@@ -60,6 +60,8 @@ def proxmox_vm_stop(url, key, nodes_path):
 
 
 def send_message_to_telegram(url, chat_id, msg):
+    if url is None or chat_id is None:
+        return
     try:
         print(f"Sending {msg} to Telegram.")
         print(f'https://api.telegram.org/{url}/sendMessage')
@@ -78,8 +80,8 @@ def run():
     proxmox_url = os.environ["PROXMOX_URL"]
     proxmox_key = os.environ["PROXMOX_KEY"]
     proxmox_vm_path = os.environ["PROXMOX_VM_PATH"]
-    telegram_url = os.environ["TELEGRAM_URL"]
-    telegram_chat_id = os.environ["TELEGRAM_CHAT_ID"]
+    telegram_url = os.environ.get("TELEGRAM_URL", None)
+    telegram_chat_id = os.environ.get("TELEGRAM_CHAT_ID", None)
     retry_count = int(os.environ.get("RETRY_COUNT", 3))
     sleep_time = int(os.environ.get("SLEEP_TIME_SECONDS", 60))
 

@@ -22,12 +22,13 @@ In order to work the program properly you need to set up some environment variab
 * **PROXMOX_VM_PATH** (mandatory) The path to the specific container or VM that hosts your Home Assistant installation.
 * > for example: nodes/{your_node_name}/qemu/{your_vm/ct_id}/status
 
-### For Telegram: 
-For more information check [here](https://core.telegram.org/bots/api). 
-* **TELEGRAM_URL** (mandatory) The part of the URL that contains the bot information and the key. Format _{botId}:{key}_ 
-> for example: bot123456:ABC************************ 
-* **TELEGRAM_CHAT_ID** (mandatory) The ID of the chat that you want to send the messages to. 
-> for example: 12345678 
+### For Telegram:
+The notifications via Telegram are optional, if both variables are not filled, the system will work correctly but without notifying the changes. Only by the process itself.
+For more information check [here](https://core.telegram.org/bots/api).
+* **TELEGRAM_URL** (optional) The part of the URL that contains the bot information and the key. Format _{botId}:{key}_
+> for example: bot123456:ABC************************
+* **TELEGRAM_CHAT_ID** (optional) The ID of the chat that you want to send the messages to.
+> for example: 12345678
 
 ### Other Variables:
 * **RETRY_COUNT** (optional) This is the number of retries that the program should wait until stop/start again the **Home Assistant** VM instance in **Proxmox**
