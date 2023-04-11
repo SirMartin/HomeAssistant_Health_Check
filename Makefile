@@ -9,7 +9,7 @@ image:
 	@docker build . -t $(IMAGE):latest -t $(IMAGE):$(TIMESTAMP)
 
 run: image
-	@docker run --rm --name home-assistant-health-checks $(IMAGE):$(TIMESTAMP)
+	@docker run --rm --env-file .env --name home-assistant-health-checks $(IMAGE):$(TIMESTAMP)
 
 shell: image
-	@docker run -it --rm --name home-assistant-health-checks $(IMAGE):$(TIMESTAMP) bash
+	@docker run -it --rm --env-file .env --name home-assistant-health-checks $(IMAGE):$(TIMESTAMP) bash
