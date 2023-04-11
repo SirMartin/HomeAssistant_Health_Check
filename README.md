@@ -37,6 +37,9 @@ If no value is provided, the programs uses **3 by default**.
 * **SLEEP_TIME_SECONDS** (optional) This is the number of seconds that the process wait to check if **Home Assistant** is alive.
 If no value is provided, the programs uses **60 seconds by default**.
 > for example: 100
+* **TIMEOUT_HA_SECONDS** (optional) This is the number of seconds that the query to check if **Home Assistant** is alive waits until get a timeout error.
+If no value is provided, the programs uses **30 seconds by default**.
+> for example: 45
 
 ## Makefile
 

@@ -3,12 +3,12 @@ import requests
 import os
 
 
-def health_check_home_assistant_external(url, key):
+def health_check_home_assistant_external(url, key, timeout):
     print("Checking External URL Home Assistant")
     try:
         response = requests.get(f'{url}/api/',
-                                headers={
-                                    'Authorization': key}, timeout = 30)
+                                headers={'Authorization': key},
+                                timeout=timeout)
         return response.status_code == 200
     except Exception as ex:
         print("HA External error.")
@@ -16,14 +16,13 @@ def health_check_home_assistant_external(url, key):
         return False
 
 
-def health_check_home_assistant_internal(url, key):
+def health_check_home_assistant_internal(url, key, timeout):
     try:
         print("Checking Internal URL Home Assistant")
         response = requests.get(f'{url}/api/',
-                                headers={
-                                    'Authorization': key},
+                                headers={'Authorization': key},
                                 verify=False,
-                                timeout = 30)
+                                timeout=timeout)
         return response.status_code == 200
     except Exception as e:
         print("HA Internal error.")
@@ -35,9 +34,8 @@ def proxmox_vm_start(url, key, nodes_path):
     try:
         print("Starting Home Assistant")
         response = requests.post(f'{url}/api2/json/{nodes_path}/start',
-                                headers={
-                                    'Authorization': key},
-                                verify=False)
+                                 headers={'Authorization': key},
+                                 verify=False)
         return response.status_code == 200
     except Exception as ex:
         print("Start VM error.")
@@ -49,9 +47,8 @@ def proxmox_vm_stop(url, key, nodes_path):
     try:
         print("Stopping Home Assistant")
         response = requests.post(f'{url}/api2/json/{nodes_path}/stop',
-                                headers={
-                                    'Authorization': key},
-                                verify=False)
+                                 headers={'Authorization': key},
+                                 verify=False)
         return response.status_code == 200
     except Exception as ex:
         print("Stop VM error.")
@@ -84,12 +81,14 @@ def run():
     telegram_chat_id = os.environ.get("TELEGRAM_CHAT_ID", None)
     retry_count = int(os.environ.get("RETRY_COUNT", 3))
     sleep_time = int(os.environ.get("SLEEP_TIME_SECONDS", 60))
+    timeout_ha = int(os.environ.get("TIMEOUT_HA_SECONDS", 30))
 
     retries_attempted = 0
 
     while True:
-        if not health_check_home_assistant_external(url=ha_url_external, key=ha_key):
-            ha_alive = health_check_home_assistant_internal(url= ha_url_internal, key= ha_key)
+        if not health_check_home_assistant_external(ha_url_external, ha_key, timeout_ha):
+            ha_alive = health_check_home_assistant_internal(
+                ha_url_internal, ha_key, timeout_ha)
 
             if not ha_alive:
                 retries_attempted += 1
@@ -97,12 +96,13 @@ def run():
                 if retries_attempted > retry_count:
                     # Stop and start the VM
                     retries_attempted = 0
-                    send_message_to_telegram(url=telegram_url, chat_id=telegram_chat_id, msg="Stopping Home Assistant's VM")
-                    proxmox_vm_stop(url=proxmox_url, key=proxmox_key, nodes_path=proxmox_vm_path)
+                    send_message_to_telegram(telegram_url, telegram_chat_id, "Stopping Home Assistant's VM")
+                    proxmox_vm_stop(proxmox_url, proxmox_key, proxmox_vm_path)
                     time.sleep(15)
-                    send_message_to_telegram(url=telegram_url, chat_id=telegram_chat_id, msg="Starting Home Assistant's VM")
-                    proxmox_vm_start(url=proxmox_url, key=proxmox_key, nodes_path=proxmox_vm_path)
-                    send_message_to_telegram(url=telegram_url, chat_id=telegram_chat_id, msg="Home Assistant's VM working again!")
+                    send_message_to_telegram(telegram_url, telegram_chat_id, "Starting Home Assistant's VM")
+                    proxmox_vm_start(
+                        url=proxmox_url, key=proxmox_key, nodes_path=proxmox_vm_path)
+                    send_message_to_telegram(telegram_url, telegram_chat_id, "Home Assistant's VM working again!")
 
         # Sleep the process for 60 seconds.
         time.sleep(sleep_time)
